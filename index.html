@@ -1,11 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
   <head>
     <meta charset="utf-8">
-    <title>poznan-bilety</title>
+    <title>Kup bilet w Poznaniu</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+      integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+      crossorigin=""/> <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+      integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+      crossorigin=""></script>
   </head>
   <body>
+    <div id="mapid" style="height: 700px"></div>
     <div id="app"></div>
-    <script src="/dist/build.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                console.log(position.coords.latitude, position.coords.longitude);
+                mymap.setView([position.coords.latitude, position.coords.longitude], 19);
+            });
+        } else {
+            console.log("Api not available");
+        }
+      var mymap = L.map('mapid').setView([0, 0], 15);
+      L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+        maxZoom: 20,
+    }).addTo(mymap);
+    fetch("http://www.poznan.pl/mim/plan/map_service.html?mtype=pub_transport&co=class_objects&class_id=4803", {
+      method: 'GET'
+    })
+    .then(function(result) {
+      console.log(result);
+    })
+    .catch(function(error) {
+      console.log(error);
+    })
+    </script>
+    <!--<script src="/dist/build.js"></script>-->
   </body>
 </html>
