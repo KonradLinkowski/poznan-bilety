@@ -28,9 +28,7 @@
         attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
         maxZoom: 20,
     }).addTo(mymap);
-    fetch("http://www.poznan.pl/mim/plan/map_service.html?mtype=pub_transport&co=class_objects&class_id=4803", {
-      method: 'GET'
-    })
+    axios.get("http://www.poznan.pl/mim/plan/map_service.html?mtype=pub_transport&co=class_objects&class_id=4803")
     .then(function(result) {
       console.log(result);
     })
