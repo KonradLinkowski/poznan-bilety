@@ -48,8 +48,14 @@ export default {
             "http://www.poznan.pl/mim/plan/map_service.html?mtype=environment&co=omnc01%20"
             axios.get("https://cors-anywhere.herokuapp.com/http://www.poznan.pl/mim/plan/map_service.html?mtype=pub_transport&co=class_objects&class_id=4000")
             .then(result => {
+                
                 this.biletomaty = result.data;
-                this.biletomatyLayer.addData(this.biletomaty);
+                this.biletomatyLayer = L.geoJSON(this.biletomaty, {
+                    style: function (feature) {
+                        return {color: "#ff0000"};
+                    },
+                    onEachFeature: this.addPopup
+                }).addTo(this.mymap);
             })
             .catch(error => {
                 console.log(error);
@@ -57,7 +63,19 @@ export default {
             axios.get("https://cors-anywhere.herokuapp.com/http://www.poznan.pl/mim/plan/map_service.html?mtype=pub_transport&co=class_objects&class_id=4803")
             .then(result => {
                 this.punkty = result.data;
-                this.punktyLayer.addData(this.punkty);
+                this.punktyLayer = L.geoJSON(this.punkty, {
+                    pointToLayer: function (feature, latlng) {
+                        return L.circleMarker(latlng, {
+                            radius: 8,
+                            fillColor: "#ff7800",
+                            color: "#000",
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        });
+                    },
+                    onEachFeature: this.addPopup
+                }).addTo(this.mymap);
             })
             .catch(error => {
                 console.log(error);
@@ -68,33 +86,6 @@ export default {
                 layer.bindPopup(feature.properties.nazwa + '\n' + feature.properties.opis);
                 //layer.bindPopup();
             }
-        },
-        showMarkers() {
-            var myStyle = {
-                "color": "#ff7800",
-                "weight": 5,
-                "opacity": 0.65
-            };
-            this.biletomatyLayer = L.geoJSON(null, {
-                style: myStyle,
-                onEachFeature: this.addPopup
-                }).addTo(this.mymap);
-            this.punktyLayer = L.geoJSON(null, {
-                style: {
-                    "color": "#ff0000"  
-                },
-                onEachFeature: this.addPopup
-            }).addTo(this.mymap);
-            /*
-            geoJSON(states, {
-                style: function(feature) {
-                    switch (feature.properties.party) {
-                        case 'Republican': return {color: "#ff0000"};
-                        case 'Democrat':   return {color: "#0000ff"};
-                    }
-                }
-            }).addTo(map);
-            */
         },
         getCurrentPosition() {
             if (navigator.geolocation) {
@@ -137,7 +128,7 @@ export default {
         */
         this.init();
         this.getCurrentPosition();
-        this.showMarkers();
+        //this.showMarkers();
         this.getData();
         //this.showMarkers();
     },
